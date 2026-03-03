@@ -1,11 +1,9 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { verifyAccessToken } from '@/lib/auth';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { ReactNode } from 'react';
-
-const prisma = new PrismaClient();
 
 // The layout component acts as an enforcement boundary wrapping the /app namespace natively.
 export default async function AppLayout({ children }: { children: ReactNode }) {

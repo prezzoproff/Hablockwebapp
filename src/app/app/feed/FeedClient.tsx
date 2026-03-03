@@ -1,8 +1,33 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { submitChatMessage, syncCommunityState } from './actions';
 import { format } from 'date-fns';
+
+function createToast(container: HTMLElement | null, icon: string, label: string, labelColor: string, body: string, bgClass: string, borderClass: string, duration: number) {
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = `${bgClass} shadow-xl rounded-2xl p-4 flex gap-3 items-center w-full max-w-sm animate-in slide-in-from-top-4 fade-in duration-300 pointer-events-auto ${borderClass}`;
+
+    const iconEl = document.createElement('div');
+    iconEl.className = "text-2xl shrink-0";
+    iconEl.textContent = icon;
+
+    const textWrap = document.createElement('div');
+    const labelEl = document.createElement('p');
+    labelEl.className = `text-xs font-bold ${labelColor}`;
+    labelEl.textContent = label;
+    const bodyEl = document.createElement('p');
+    bodyEl.className = "text-sm font-medium text-slate-800 line-clamp-1";
+    bodyEl.textContent = body;
+
+    textWrap.appendChild(labelEl);
+    textWrap.appendChild(bodyEl);
+    toast.appendChild(iconEl);
+    toast.appendChild(textWrap);
+    container.appendChild(toast);
+    setTimeout(() => { toast.classList.add('fade-out', 'slide-out-to-top-4'); setTimeout(() => toast.remove(), 300); }, duration);
+}
 
 export default function FeedClient({ initialPosts, currentUser }: { initialPosts: any[], currentUser: any }) {
     const [posts, setPosts] = useState(initialPosts);
@@ -40,50 +65,18 @@ export default function FeedClient({ initialPosts, currentUser }: { initialPosts
                             });
 
                             othersPosts.forEach(p => {
-                                const toast = document.createElement('div');
-                                toast.className = "bg-white shadow-xl rounded-2xl p-4 flex gap-3 items-center w-full max-w-sm animate-in slide-in-from-top-4 fade-in duration-300 pointer-events-auto border border-slate-100";
-                                toast.innerHTML = `
-                                    <div class="w-10 h-10 rounded-full overflow-hidden shrink-0 bg-slate-100">
-                                        ${p.author.profile_photo ? `<img src="${p.author.profile_photo}" class="w-full h-full object-cover"/>` : `👤`}
-                                    </div>
-                                    <div>
-                                        <p class="text-xs font-bold text-green-800">New Message</p>
-                                        <p class="text-sm font-medium text-slate-800 line-clamp-1">${p.author.first_name}: ${p.content}</p>
-                                    </div>
-                                `;
-                                container?.appendChild(toast);
-                                setTimeout(() => { toast.classList.add('fade-out', 'slide-out-to-top-4'); setTimeout(() => toast.remove(), 300); }, 4000);
+                                createToast(container, '💬', 'New Message', 'text-green-800', `${p.author.first_name}: ${p.content}`, 'bg-white', 'border border-slate-100', 4000);
                             });
                         }
                     }
 
                     if (data.newUsers > 0) {
-                        const toast = document.createElement('div');
-                        toast.className = "bg-green-50 shadow-xl rounded-2xl p-4 flex gap-3 items-center w-full max-w-sm animate-in slide-in-from-top-4 fade-in duration-300 pointer-events-auto border border-green-200";
-                        toast.innerHTML = `
-                            <div class="text-2xl">🎉</div>
-                            <div>
-                                <p class="text-xs font-bold text-green-800">Community Growth</p>
-                                <p class="text-sm font-medium text-slate-800">${data.newUsers} new resident(s) joined Hablock!</p>
-                            </div>
-                        `;
-                        container?.appendChild(toast);
-                        setTimeout(() => { toast.classList.add('fade-out', 'slide-out-to-top-4'); setTimeout(() => toast.remove(), 300); }, 5000);
+                        createToast(container, '🎉', 'Community Growth', 'text-green-800', `${data.newUsers} new resident(s) joined Hablock!`, 'bg-green-50', 'border border-green-200', 5000);
                     }
 
                     if (data.alerts.length > 0) {
                         data.alerts.forEach(a => {
-                            const toast = document.createElement('div');
-                            toast.className = "bg-amber-50 shadow-xl rounded-2xl p-4 flex gap-3 items-center w-full max-w-sm animate-in slide-in-from-top-4 fade-in duration-300 pointer-events-auto border border-amber-200";
-                            toast.innerHTML = `
-                                <div class="text-2xl">🔔</div>
-                                <div>
-                                    <p class="text-xs font-bold text-amber-800">Building Alert</p>
-                                    <p class="text-sm font-medium text-slate-800 line-clamp-1">${a.content}</p>
-                                </div>
-                            `;
-                            container?.appendChild(toast);
-                            setTimeout(() => { toast.classList.add('fade-out', 'slide-out-to-top-4'); setTimeout(() => toast.remove(), 300); }, 5000);
+                            createToast(container, '🔔', 'Building Alert', 'text-amber-800', a.content, 'bg-amber-50', 'border border-amber-200', 5000);
                         });
                     }
                 }
@@ -138,7 +131,7 @@ export default function FeedClient({ initialPosts, currentUser }: { initialPosts
                     <h1 className="text-xl font-bold tracking-tight text-[#2D3748]">Community Lounge</h1>
                     <p className="text-xs text-green-700 font-medium flex items-center gap-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                        End-to-End Encrypted
+                        Encrypted
                     </p>
                 </div>
                 <div className="flex -space-x-2">

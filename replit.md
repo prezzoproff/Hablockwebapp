@@ -10,36 +10,52 @@ A Next.js 16 property management platform ("The Modern Building OS") that connec
 - **Auth**: JWT-based with HTTP-only cookies (`hablock_access` + `hablock_refresh`)
 - **Storage**: Local filesystem (`public/uploads/`) for profile photos; S3 module available for future use
 - **Animation**: Framer Motion
+- **Encryption**: AES-256-CBC for chat messages (via `crypto` in `auth.ts`)
+- **Date Utils**: date-fns
 
 ## Project Structure
 
 ```
 src/
   app/
-    page.tsx          - Marketing / landing page
-    layout.tsx        - Root layout
-    api/upload/       - Local file upload API endpoint
-    app/              - Authenticated resident area (feed)
-    listings/         - Public marketplace (dynamic rendering)
-    login/            - Login page
-    register/         - Registration page
-    manager/          - Manager dashboard (role-protected)
+    page.tsx              - Marketing / landing page
+    layout.tsx            - Root layout
+    api/upload/           - Local file upload API endpoint
+    app/
+      layout.tsx          - App shell with sidebar + mobile nav + toast container
+      feed/
+        page.tsx          - Server component: auth + initial encrypted posts
+        FeedClient.tsx    - Client component: chat UI with polling + optimistic updates
+        actions.ts        - Server actions: submitChatMessage, syncCommunityState
+      alerts/page.tsx     - Building alerts with 48h expiration
+      residents/page.tsx  - Residents directory
+    listings/             - Public marketplace (dynamic rendering)
+    login/                - Login page
+    register/             - Registration page
+    manager/              - Manager dashboard (role-protected)
   lib/
-    auth.ts           - JWT helpers (generate/verify tokens, set cookies)
-    prisma.ts         - Prisma client singleton
-    storage.ts        - S3 storage helpers (unused, kept for future)
-  middleware.ts       - Route protection + role-based access
+    auth.ts               - JWT helpers + AES-256-CBC encrypt/decrypt utilities
+    prisma.ts             - Prisma client singleton
+    storage.ts            - S3 storage helpers (unused, kept for future)
+  middleware.ts           - Route protection + role-based access
 prisma/
-  schema.prisma       - Database schema (PostgreSQL)
-  seed.ts             - Database seed script (countries, areas, admin user)
+  schema.prisma           - Database schema (PostgreSQL)
+  seed.ts                 - Database seed script (countries, areas, admin user)
 ```
+
+## Key Features
+
+- **Encrypted Chat Feed**: AES-256-CBC encrypted messages stored in DB, decrypted on read. Real-time polling every 5s with slide-in toast notifications for new messages/alerts/users.
+- **48h Rolling Expiration**: Both chat messages and alerts auto-filter to last 48 hours. Persistent "Say hi!" posts preserved.
+- **Residents Directory**: Profile photos, roles, names, unit mappings scoped to authenticated community.
+- **Mobile Nav**: Bottom bar with Feed, Alerts, Residents. Desktop sidebar with full navigation.
 
 ## Key Data Models
 
 - **User** - residents / managers / admins linked to buildings and units
 - **Building** - multi-unit residential properties
 - **Unit** - individual units within a building
-- **Post** - community bulletin board posts
+- **Post** - community chat messages (AES encrypted content)
 - **Alert** - manager-issued alerts (emergency / maintenance / reminder)
 - **Listing** + **ListingImage** - public marketplace listings
 - **Inquiry** - user inquiries on listings
@@ -65,6 +81,7 @@ Production runs `next start` on port 5000.
 - `DATABASE_URL` - PostgreSQL connection string (managed by Replit)
 - `JWT_SECRET` - Secret for signing access tokens (falls back to a hardcoded value in dev)
 - `REFRESH_SECRET` - Secret for signing refresh tokens
+- `ENCRYPTION_KEY` - 32-byte key for AES-256-CBC chat encryption (falls back to hardcoded dev key)
 - AWS/S3 credentials optional (only if S3 storage is enabled later)
 
 ## Workflow
