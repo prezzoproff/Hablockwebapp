@@ -8,7 +8,7 @@ A Next.js 16 property management platform ("The Modern Building OS") that connec
 - **Styling**: Tailwind CSS v4
 - **Database**: SQLite via Prisma ORM (dev.db stored at `prisma/dev.db`)
 - **Auth**: JWT-based with HTTP-only cookies (`hablock_access` + `hablock_refresh`)
-- **Storage**: AWS S3 (for listing images)
+- **Storage**: Local filesystem (`public/uploads/`) for profile photos; S3 module available for future use
 - **Animation**: Framer Motion
 
 ## Project Structure
@@ -26,7 +26,8 @@ src/
   lib/
     auth.ts           - JWT helpers (generate/verify tokens, set cookies)
     prisma.ts         - Prisma client singleton
-    storage.ts        - S3 storage helpers
+    storage.ts        - S3 storage helpers (unused, kept for future)
+    api/upload/route.ts - Local file upload API endpoint
   middleware.ts       - Route protection + role-based access
 prisma/
   schema.prisma       - Database schema
@@ -60,8 +61,8 @@ npm run db:seed      # Seed the database
 
 - `JWT_SECRET` - Secret for signing access tokens (falls back to a hardcoded value in dev)
 - `REFRESH_SECRET` - Secret for signing refresh tokens
-- AWS credentials needed for S3 image uploads (AWSACCESSKEYID, AWSSECRETACCESSKEY, etc.)
 - `DATABASE_URL` is overridden in the dev script to point to SQLite
+- AWS/S3 credentials optional (only if S3 storage is enabled later)
 
 ## Workflow
 

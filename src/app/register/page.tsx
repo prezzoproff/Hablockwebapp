@@ -11,7 +11,6 @@ import {
     createOrGetBuilding,
     createOrGetUnit,
     finalizeRegistration,
-    requestAvatarUploadUrl
 } from './actions';
 
 export default function RegisterMultiStepPage() {
@@ -75,13 +74,15 @@ export default function RegisterMultiStepPage() {
         const file = e.target.files[0];
         setLoading(true);
         try {
-            const { uploadUrl, publicUrl } = await requestAvatarUploadUrl();
-            await fetch(uploadUrl, {
-                method: 'PUT',
-                body: file,
-                headers: { 'Content-Type': file.type }
-            });
-            setPhotoUrl(publicUrl);
+            const formData = new FormData();
+            formData.append('file', file);
+            const res = await fetch('/api/upload', { method: 'POST', body: formData });
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || 'Upload failed');
+            }
+            const { url } = await res.json();
+            setPhotoUrl(url);
         } catch (err) {
             console.error("Failed to upload photo", err);
             setError("Image upload failed. Please try again.");

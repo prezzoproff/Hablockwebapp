@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { verifyAccessToken } from '@/lib/auth';
 
 // Paths that don't explicitly require authentication at all
-const publicPaths = ['/login', '/register', '/listings', '/api/auth'];
+const publicPaths = ['/login', '/register', '/listings', '/api/auth', '/api/upload'];
 
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
@@ -12,7 +12,8 @@ export function middleware(request: NextRequest) {
     if (
         pathname.startsWith('/_next') ||
         pathname.startsWith('/favicon.ico') ||
-        pathname.startsWith('/public')
+        pathname.startsWith('/public') ||
+        pathname.startsWith('/uploads')
     ) {
         return NextResponse.next();
     }
