@@ -1,0 +1,172 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password_hash String
+  phone_number  String?
+  role          String    @default("resident") // "resident" | "manager" | "admin"
+  first_name    String
+  last_name     String
+  profile_photo String?
+  building_id   String?
+  unit_id       String?
+  verified      Boolean   @default(false)
+  created_at    DateTime  @default(now())
+
+  // Relationships
+  building      Building? @relation("UserToBuilding", fields: [building_id], references: [id], onDelete: SetNull)
+  unit          Unit?     @relation(fields: [unit_id], references: [id], onDelete: SetNull)
+  managed_buildings Building[] @relation("ManagerToBuilding")
+  posts         Post[]
+  alerts        Alert[]
+  inquiries     Inquiry[]
+
+  @@index([building_id])
+}
+
+model Building {
+  id            String    @id @default(uuid())
+  name          String
+  country       String
+  area          String
+  building_code String    @unique
+  managed       Boolean   @default(false)
+  verified      Boolean   @default(false)
+  manager_id    String?
+  created_at    DateTime  @default(now())
+
+  // Relationships
+  manager       User?     @relation("ManagerToBuilding", fields: [manager_id], references: [id], onDelete: SetNull)
+  residents     User[]    @relation("UserToBuilding")
+  units         Unit[]
+  posts         Post[]
+  alerts        Alert[]
+  listings      Listing[]
+
+  @@unique([name, country, area])
+  @@index([manager_id])
+}
+
+model Unit {
+  id            String    @id @default(uuid())
+  building_id   String
+  unit_label    String    // normalized uppercase
+  created_at    DateTime  @default(now())
+
+  // Relationships
+  building      Building  @relation(fields: [building_id], references: [id], onDelete: Cascade)
+  residents     User[]
+
+  @@unique([building_id, unit_label])
+}
+
+model Post {
+  id            String    @id @default(uuid())
+  building_id   String
+  author_id     String
+  content       String
+  created_at    DateTime  @default(now())
+  expires_at    DateTime?
+  persistent    Boolean   @default(false)
+
+  // Relationships
+  building      Building  @relation(fields: [building_id], references: [id], onDelete: Cascade)
+  author        User      @relation(fields: [author_id], references: [id], onDelete: Cascade)
+
+  @@index([building_id, created_at(sort: Desc)])
+}
+
+model Alert {
+  id            String    @id @default(uuid())
+  building_id   String
+  author_id     String
+  type          String    // "emergency" | "maintenance" | "reminder"
+  content       String
+  priority      Int       @default(1) // e.g. 1 = low, 3 = high
+  created_at    DateTime  @default(now())
+
+  // Relationships
+  building      Building  @relation(fields: [building_id], references: [id], onDelete: Cascade)
+  author        User      @relation(fields: [author_id], references: [id], onDelete: Cascade)
+
+  @@index([building_id, created_at(sort: Desc)])
+}
+
+model Listing {
+  id            String    @id @default(uuid())
+  building_id   String
+  manager_id    String    // Kept for direct indexing as requested, implicitly building manager
+  unit_number   String
+  price         Int
+  bedrooms      Int
+  bathrooms     Float
+  sqft          Int
+  description   String
+  available_from DateTime?
+  status        String    @default("vacant") // "vacant" | "occupied"
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  // Relationships
+  building      Building  @relation(fields: [building_id], references: [id], onDelete: Cascade)
+  images        ListingImage[]
+  inquiries     Inquiry[]
+
+  @@index([building_id])
+  // Compound index required by SEO mapping
+  // Prisma requires joining fields from relations manually if mapping across tables
+  // For the specific requested [country, area, status, price], we rely on DB specifics or denormalizing.
+  // We'll index status and price locally.
+  @@index([status, price])
+}
+
+model ListingImage {
+  id            String    @id @default(uuid())
+  listing_id    String
+  image_url     String
+  is_cover      Boolean   @default(false)
+  order_index   Int       @default(0)
+
+  // Relationships
+  listing       Listing   @relation(fields: [listing_id], references: [id], onDelete: Cascade)
+
+  @@index([listing_id])
+}
+
+model Inquiry {
+  id            String    @id @default(uuid())
+  listing_id    String
+  sender_id     String
+  message       String
+  created_at    DateTime  @default(now())
+
+  // Relationships
+  listing       Listing   @relation(fields: [listing_id], references: [id], onDelete: Cascade)
+  sender        User      @relation(fields: [sender_id], references: [id], onDelete: Cascade)
+
+  @@index([listing_id])
+}
+
+model LocationCountry {
+  name        String         @id
+  areas       LocationArea[]
+  created_at  DateTime       @default(now())
+}
+
+model LocationArea {
+  id          String          @id @default(uuid())
+  name        String
+  country_name String
+  country     LocationCountry @relation(fields: [country_name], references: [name], onDelete: Cascade)
+  created_at  DateTime        @default(now())
+
+  @@unique([country_name, name])
+}
