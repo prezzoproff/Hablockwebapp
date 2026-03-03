@@ -1,9 +1,9 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import Image from 'next/image';
 
-const prisma = new PrismaClient();
+export const dynamic = 'force-dynamic';
 
 // Next.js 14 requires `params` and `searchParams` to be treated as Promises in Server Components when generating dynamic metadata or rendering
 type Props = {

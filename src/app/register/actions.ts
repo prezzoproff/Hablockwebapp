@@ -1,12 +1,9 @@
 'use server';
 
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { setCookieSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { generateUploadUrl, getPublicUrl } from '@/lib/storage';
 import crypto from 'crypto';
-
-const prisma = new PrismaClient();
 
 // Step 1: Location Fetching
 export async function getCountries() {
@@ -14,12 +11,6 @@ export async function getCountries() {
         orderBy: { name: 'asc' }
     });
     return countries;
-}
-
-export async function requestAvatarUploadUrl() {
-    const fileKey = `avatars/${crypto.randomUUID()}-${Date.now()}.jpg`;
-    const url = await generateUploadUrl(fileKey, 'image/jpeg');
-    return { uploadUrl: url, publicUrl: getPublicUrl(fileKey) };
 }
 
 export async function createCountry(name: string) {

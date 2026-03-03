@@ -6,7 +6,7 @@ A Next.js 16 property management platform ("The Modern Building OS") that connec
 
 - **Framework**: Next.js 16 (App Router, React 19, TypeScript)
 - **Styling**: Tailwind CSS v4
-- **Database**: SQLite via Prisma ORM (dev.db stored at `prisma/dev.db`)
+- **Database**: PostgreSQL via Prisma ORM (Replit-managed)
 - **Auth**: JWT-based with HTTP-only cookies (`hablock_access` + `hablock_refresh`)
 - **Storage**: Local filesystem (`public/uploads/`) for profile photos; S3 module available for future use
 - **Animation**: Framer Motion
@@ -18,8 +18,9 @@ src/
   app/
     page.tsx          - Marketing / landing page
     layout.tsx        - Root layout
+    api/upload/       - Local file upload API endpoint
     app/              - Authenticated resident area (feed)
-    listings/         - Public marketplace
+    listings/         - Public marketplace (dynamic rendering)
     login/            - Login page
     register/         - Registration page
     manager/          - Manager dashboard (role-protected)
@@ -27,12 +28,10 @@ src/
     auth.ts           - JWT helpers (generate/verify tokens, set cookies)
     prisma.ts         - Prisma client singleton
     storage.ts        - S3 storage helpers (unused, kept for future)
-    api/upload/route.ts - Local file upload API endpoint
   middleware.ts       - Route protection + role-based access
 prisma/
-  schema.prisma       - Database schema
-  dev.db              - SQLite development database
-  seed.ts             - Database seed script
+  schema.prisma       - Database schema (PostgreSQL)
+  seed.ts             - Database seed script (countries, areas, admin user)
 ```
 
 ## Key Data Models
@@ -48,20 +47,24 @@ prisma/
 
 ## Development
 
-The dev script sets `DATABASE_URL=file:./prisma/dev.db` explicitly, overriding the runtime-managed Postgres URL, since this project uses SQLite.
-
 ```bash
-npm run dev       # Starts Next.js on 0.0.0.0:5000
+npm run dev        # Starts Next.js on 0.0.0.0:5000
 npm run db:generate  # Regenerate Prisma client
-npm run db:migrate   # Apply migrations to dev.db
-npm run db:seed      # Seed the database
+npm run db:push      # Push schema to database
+npm run db:seed      # Seed the database with countries and admin
 ```
+
+## Build & Deploy
+
+The build command runs `prisma generate && prisma db push --skip-generate && next build`.
+All database-querying pages use `export const dynamic = 'force-dynamic'` to prevent pre-rendering failures at build time.
+Production runs `next start` on port 5000.
 
 ## Environment Variables
 
+- `DATABASE_URL` - PostgreSQL connection string (managed by Replit)
 - `JWT_SECRET` - Secret for signing access tokens (falls back to a hardcoded value in dev)
 - `REFRESH_SECRET` - Secret for signing refresh tokens
-- `DATABASE_URL` is overridden in the dev script to point to SQLite
 - AWS/S3 credentials optional (only if S3 storage is enabled later)
 
 ## Workflow

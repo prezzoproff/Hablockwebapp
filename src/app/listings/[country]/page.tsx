@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 
-const prisma = new PrismaClient();
+export const dynamic = 'force-dynamic';
 
 type Props = {
     params: Promise<{ country: string }>;

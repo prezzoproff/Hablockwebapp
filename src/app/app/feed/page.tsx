@@ -1,9 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { cookies } from 'next/headers';
 import { verifyAccessToken } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 
-const prisma = new PrismaClient();
+export const dynamic = 'force-dynamic';
 
 export default async function FeedPage() {
     const cookieStore = await cookies();

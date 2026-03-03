@@ -1,10 +1,10 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { cookies } from 'next/headers';
 import { verifyAccessToken } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 
-const prisma = new PrismaClient();
+export const dynamic = 'force-dynamic';
 
 // Internal function triggering random short code generator
 function generateBuildingCode() {
