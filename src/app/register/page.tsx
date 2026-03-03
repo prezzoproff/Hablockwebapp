@@ -31,7 +31,7 @@ export default function RegisterMultiStepPage() {
 
     // Step 2 & 3 State (Location)
     const [countries, setCountries] = useState<{ name: string }[]>([]);
-    const [selectedCountry, setSelectedCountry] = useState('');
+    const [selectedCountry, setSelectedCountry] = useState('Kenya');
 
     const [areaQuery, setAreaQuery] = useState('');
     const [areas, setAreas] = useState<{ id: string, name: string }[]>([]);
@@ -209,7 +209,19 @@ export default function RegisterMultiStepPage() {
                             </div>
 
                             <div className="flex gap-2">
-                                <input type="text" value={phoneCode} onChange={e => setPhoneCode(e.target.value)} className="w-24 bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-center focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 font-medium" />
+                                <select value={phoneCode} onChange={e => setPhoneCode(e.target.value)} className="w-28 bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-center focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 font-medium text-sm">
+                                    <option value="+254">🇰🇪 +254</option>
+                                    <option value="+234">🇳🇬 +234</option>
+                                    <option value="+27">🇿🇦 +27</option>
+                                    <option value="+255">🇹🇿 +255</option>
+                                    <option value="+256">🇺🇬 +256</option>
+                                    <option value="+233">🇬🇭 +233</option>
+                                    <option value="+250">🇷🇼 +250</option>
+                                    <option value="+251">🇪🇹 +251</option>
+                                    <option value="+971">🇦🇪 +971</option>
+                                    <option value="+44">🇬🇧 +44</option>
+                                    <option value="+1">🇺🇸 +1</option>
+                                </select>
                                 <input type="tel" placeholder="Phone Number" value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600" />
                             </div>
 
