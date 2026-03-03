@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "set DATABASE_URL=file:./dev.db&& next dev",
+    "dev": "DATABASE_URL=file:./prisma/dev.db next dev -p 5000 -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:generate": "prisma generate",
+    "db:migrate": "DATABASE_URL=file:./prisma/dev.db prisma migrate deploy",
+    "db:seed": "DATABASE_URL=file:./prisma/dev.db tsx prisma/seed.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1000.0",
