@@ -41,11 +41,11 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
                     <Link href="/app/feed" className="block px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors">
                         <span className="font-medium text-slate-700">Bulletin</span>
                     </Link>
-                    <Link href="/app/directory" className="block px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors">
-                        <span className="font-medium text-slate-700">Directory</span>
-                    </Link>
                     <Link href="/app/alerts" className="block px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors">
                         <span className="font-medium text-slate-700">Alerts</span>
+                    </Link>
+                    <Link href="/app/residents" className="block px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors">
+                        <span className="font-medium text-slate-700">Residents</span>
                     </Link>
                     <Link href="/app/explore" className="block px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors">
                         <span className="font-medium text-slate-700">Explore</span>
@@ -54,25 +54,28 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             </aside>
 
             {/* Main Content Payload */}
-            <main className="max-w-3xl mx-auto w-full">
+            <main className="max-w-3xl mx-auto w-full relative">
                 {children}
+
+                {/* Toast Notification Container natively injecting into layout */}
+                <div id="hablock-toast-container" className="fixed top-4 left-0 right-0 z-50 pointer-events-none flex flex-col items-center gap-2 px-4" />
             </main>
 
             {/* Mobile Bottom Navigation Bar styled warmly */}
-            <nav className="fixed bottom-0 w-full bg-white/90 backdrop-blur-md border-t border-slate-100 lg:hidden flex justify-around p-4 pb-safe z-50">
+            <nav className="fixed bottom-0 w-full bg-white/95 backdrop-blur-xl border-t border-slate-100 lg:hidden flex justify-around p-4 pb-safe z-50 shadow-[0_-4px_20px_rgb(0,0,0,0.02)]">
                 <Link href="/app/feed" className="flex flex-col items-center">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center bg-green-50 text-green-700">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-slate-600 hover:bg-green-50 hover:text-green-700 transition-colors">
                         <span className="text-xl">🏠</span>
                     </div>
                 </Link>
-                <Link href="/app/directory" className="flex flex-col items-center text-slate-400">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center">
-                        <span className="text-xl">👥</span>
+                <Link href="/app/alerts" className="flex flex-col items-center">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-slate-600 hover:bg-green-50 hover:text-green-700 transition-colors">
+                        <span className="text-xl">🔔</span>
                     </div>
                 </Link>
-                <Link href="/app/alerts" className="flex flex-col items-center text-slate-400">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center">
-                        <span className="text-xl">🔔</span>
+                <Link href="/app/residents" className="flex flex-col items-center">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-slate-600 hover:bg-green-50 hover:text-green-700 transition-colors">
+                        <span className="text-xl">👥</span>
                     </div>
                 </Link>
             </nav>

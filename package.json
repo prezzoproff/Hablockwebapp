@@ -17,6 +17,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@prisma/client": "^5.10.2",
     "@types/jsonwebtoken": "^9.0.10",
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.34.4",
     "jsonwebtoken": "^9.0.3",
     "next": "16.1.6",
