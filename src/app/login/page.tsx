@@ -1,45 +1,30 @@
-import { PrismaClient } from '@prisma/client';
-import { setCookieSession } from '@/lib/auth';
-import { redirect } from 'next/navigation';
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
+import { signIn } from './actions';
 
-const prisma = new PrismaClient();
+export default function LoginPage() {
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
-export default async function LoginPage() {
-    async function signIn(formData: FormData) {
-        'use server';
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
 
-        const email = formData.get('email') as string;
-        const password = formData.get('password') as string;
+        const formData = new FormData(e.currentTarget);
 
-        if (!email || !password) return;
-
-        // A real production app would use bcrypt to compare hashes.
-        // Given the parameters, we simulate the DB extraction:
-        const user = await prisma.user.findUnique({
-            where: { email }
-        });
-
-        if (!user || user.password_hash !== password) {
-            // Stub error rendering handling. In Next 14 actions usually useState/useFormState hooks
-            console.error("Invalid credentials");
-            return;
-        }
-
-        // Assigning Server-side cookies via Next Headers utility
-        await setCookieSession({
-            id: user.id,
-            role: user.role,
-            building_id: user.building_id,
-            unit_id: user.unit_id,
-            first_name: user.first_name
-        });
-
-        // Routing dynamically on User Role
-        if (user.role === 'manager' || user.role === 'admin') {
-            redirect('/manager/dashboard');
-        } else {
-            redirect('/app/feed');
+        try {
+            const result = await signIn(formData);
+            if (result?.error) {
+                setError(result.error);
+            }
+        } catch (err: any) {
+            if (err?.digest?.includes('NEXT_REDIRECT')) throw err;
+            setError('Something went wrong. Please try again.');
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -55,7 +40,13 @@ export default async function LoginPage() {
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md animate-in slide-in-from-bottom-4 duration-500">
                 <div className="bg-white py-8 px-4 shadow-xl shadow-slate-200/40 sm:rounded-3xl sm:px-10 border border-slate-100">
-                    <form action={signIn} className="space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        {error && (
+                            <div className="bg-red-50 text-red-700 text-sm font-medium px-4 py-3 rounded-xl border border-red-100">
+                                {error}
+                            </div>
+                        )}
+
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-slate-700">Email address</label>
                             <div className="mt-1">
@@ -63,6 +54,7 @@ export default async function LoginPage() {
                                     id="email"
                                     name="email"
                                     type="email"
+                                    autoComplete="email"
                                     required
                                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-colors"
                                 />
@@ -76,6 +68,7 @@ export default async function LoginPage() {
                                     id="password"
                                     name="password"
                                     type="password"
+                                    autoComplete="current-password"
                                     required
                                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-colors"
                                 />
@@ -95,9 +88,10 @@ export default async function LoginPage() {
                         <div>
                             <button
                                 type="submit"
-                                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-green-800 hover:bg-green-900 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                disabled={loading}
+                                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-green-800 hover:bg-green-900 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-60"
                             >
-                                Sign in
+                                {loading ? 'Signing in...' : 'Sign in'}
                             </button>
                         </div>
                     </form>
