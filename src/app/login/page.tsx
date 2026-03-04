@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { signIn } from './actions';
 
 export default function LoginPage() {
     const [error, setError] = useState('');
@@ -16,14 +15,26 @@ export default function LoginPage() {
         setLoading(true);
 
         const formData = new FormData(e.currentTarget);
+        const email = formData.get('email') as string;
+        const password = formData.get('password') as string;
 
         try {
-            const result = await signIn(formData);
-            if (result.error) {
-                setError(result.error);
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                setError(data.error || 'Invalid email or password.');
                 setLoading(false);
-            } else if (result.redirectTo) {
-                router.push(result.redirectTo);
+                return;
+            }
+
+            if (data.redirectTo) {
+                router.push(data.redirectTo);
             }
         } catch {
             setError('Something went wrong. Please try again.');
