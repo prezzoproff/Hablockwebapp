@@ -2,9 +2,8 @@
 
 import { prisma } from '@/lib/prisma';
 import { setCookieSession } from '@/lib/auth';
-import { redirect } from 'next/navigation';
 
-export async function signIn(formData: FormData) {
+export async function signIn(formData: FormData): Promise<{ error?: string; redirectTo?: string }> {
     const email = (formData.get('email') as string)?.trim().toLowerCase();
     const password = formData.get('password') as string;
 
@@ -30,8 +29,8 @@ export async function signIn(formData: FormData) {
     });
 
     if (user.role === 'manager' || user.role === 'admin') {
-        redirect('/manager/dashboard');
+        return { redirectTo: '/manager/dashboard' };
     } else {
-        redirect('/app/feed');
+        return { redirectTo: '/app/feed' };
     }
 }

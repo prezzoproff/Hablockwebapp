@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { signIn } from './actions';
 
 export default function LoginPage() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -17,13 +19,14 @@ export default function LoginPage() {
 
         try {
             const result = await signIn(formData);
-            if (result?.error) {
+            if (result.error) {
                 setError(result.error);
+                setLoading(false);
+            } else if (result.redirectTo) {
+                router.push(result.redirectTo);
             }
-        } catch (err: any) {
-            if (err?.digest?.includes('NEXT_REDIRECT')) throw err;
+        } catch {
             setError('Something went wrong. Please try again.');
-        } finally {
             setLoading(false);
         }
     }
