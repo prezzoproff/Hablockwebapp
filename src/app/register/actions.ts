@@ -213,7 +213,8 @@ export async function finalizeRegistration(formData: FormData) {
         building_id: user.building_id,
         unit_id: user.unit_id,
         first_name: user.first_name,
-        last_name: user.last_name || undefined
+        last_name: user.last_name || undefined,
+        profile_photo: user.profile_photo || undefined
     });
 
     if (user.role === 'manager' || user.role === 'admin') {

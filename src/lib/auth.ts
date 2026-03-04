@@ -11,6 +11,7 @@ export interface UserSessionPayload {
     unit_id?: string | null;
     first_name: string;
     last_name?: string;
+    profile_photo?: string | null;
 }
 
 export function generateAccessToken(payload: UserSessionPayload) {

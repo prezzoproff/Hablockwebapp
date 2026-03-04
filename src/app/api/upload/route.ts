@@ -72,7 +72,8 @@ export async function POST(request: NextRequest) {
         const filePath = path.join(uploadDir, filename);
         await writeFile(filePath, buffer);
 
-        const publicUrl = `/uploads/avatars/${filename}`;
+        // Pointing to the new explicit dynamic router instead of static 'public' bypasses PaaS caching limits.
+        const publicUrl = `/api/avatar/${filename}`;
 
         return NextResponse.json({ url: publicUrl });
     } catch (error) {

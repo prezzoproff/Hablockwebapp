@@ -26,6 +26,7 @@ export default function RegisterMultiStepPage() {
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [phoneCode, setPhoneCode] = useState('+254'); // Default Kenya
     const [phoneNumber, setPhoneNumber] = useState('');
 
@@ -226,9 +227,15 @@ export default function RegisterMultiStepPage() {
                             </div>
 
                             <input type="email" placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)} required
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600" />
-                            <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600" />
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-colors" />
+
+                            <div className="relative">
+                                <input type={showPassword ? 'text' : 'password'} placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-colors" />
+                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-green-700 text-sm font-bold transition-colors">
+                                    {showPassword ? 'HIDE' : 'SHOW'}
+                                </button>
+                            </div>
 
                             <div className="grid grid-cols-2 gap-3 pt-2">
                                 <label className="border border-slate-200 rounded-xl p-3 flex items-center justify-center gap-2 cursor-pointer hover:bg-slate-50 has-[:checked]:border-green-600 has-[:checked]:bg-green-50 transition-colors">
@@ -241,7 +248,7 @@ export default function RegisterMultiStepPage() {
                                 </label>
                             </div>
 
-                            <button onClick={nextStep} disabled={loading} className="w-full py-3 px-4 rounded-xl font-semibold text-white bg-green-800 hover:bg-green-900 transition-colors disabled:opacity-50">Continue</button>
+                            <button onClick={nextStep} disabled={loading} className="w-full py-3.5 px-4 rounded-xl shadow-md shadow-green-900/10 font-bold tracking-wide text-white bg-gradient-to-r from-green-800 to-green-700 hover:from-green-900 hover:to-green-800 transition-all disabled:opacity-50 hover:shadow-lg hover:-translate-y-0.5">Continue</button>
                             <div className="text-center text-sm text-slate-500 mt-4">Already registered? <Link href="/login" className="text-green-700 font-medium">Sign in</Link></div>
                         </div>
                     )}
@@ -262,7 +269,7 @@ export default function RegisterMultiStepPage() {
                             </select>
                             <div className="flex gap-3 pt-4">
                                 <button onClick={() => setStep(1)} className="flex-1 py-3 px-4 rounded-xl font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Back</button>
-                                <button onClick={nextStep} className="flex-1 py-3 px-4 rounded-xl font-semibold text-white bg-green-800 hover:bg-green-900 transition-colors">Next</button>
+                                <button onClick={nextStep} className="flex-1 py-3.5 px-4 rounded-xl shadow-md font-bold tracking-wide text-white bg-gradient-to-r from-green-800 to-green-700 hover:from-green-900 hover:to-green-800 transition-all hover:-translate-y-0.5">Next</button>
                             </div>
                         </div>
                     )}

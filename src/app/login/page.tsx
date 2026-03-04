@@ -7,6 +7,7 @@ import Link from 'next/link';
 export default function LoginPage() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -77,15 +78,18 @@ export default function LoginPage() {
 
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-slate-700">Password</label>
-                            <div className="mt-1">
+                            <div className="mt-1 relative">
                                 <input
                                     id="password"
                                     name="password"
-                                    type="password"
+                                    type={showPassword ? 'text' : 'password'}
                                     autoComplete="current-password"
                                     required
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-colors"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-colors"
                                 />
+                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-green-700 text-sm font-bold flex items-center justify-center p-1 rounded-md transition-colors outline-none">
+                                    {showPassword ? 'HIDE' : 'SHOW'}
+                                </button>
                             </div>
                         </div>
 
@@ -103,9 +107,9 @@ export default function LoginPage() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-green-800 hover:bg-green-900 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-60"
+                                className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-md shadow-green-900/10 text-sm font-bold tracking-wide text-white bg-gradient-to-r from-green-800 to-green-700 hover:from-green-900 hover:to-green-800 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-60"
                             >
-                                {loading ? 'Signing in...' : 'Sign in'}
+                                {loading ? 'Opening doors...' : 'Sign in'}
                             </button>
                         </div>
                     </form>

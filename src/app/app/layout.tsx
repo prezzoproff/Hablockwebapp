@@ -4,6 +4,7 @@ import { verifyAccessToken } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { ReactNode } from 'react';
+import { LogoutButton } from './LogoutButton';
 
 // The layout component acts as an enforcement boundary wrapping the /app namespace natively.
 export default async function AppLayout({ children }: { children: ReactNode }) {
@@ -43,16 +44,38 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
                         <span className="font-medium text-slate-700">Alerts</span>
                     </Link>
                     <Link href="/app/residents" className="block px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors">
-                        <span className="font-medium text-slate-700">Residents</span>
+                        <span className="font-medium text-slate-700">Directory</span>
                     </Link>
-                    <Link href="/app/explore" className="block px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors">
-                        <span className="font-medium text-slate-700">Explore</span>
+                    <Link href="/app/profile" className="block px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors">
+                        <span className="font-medium text-slate-700">Profile Settings</span>
+                    </Link>
+                    <Link href="/listings" className="block px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors">
+                        <span className="font-medium text-slate-700">Explore Homes</span>
                     </Link>
                 </nav>
+
+                {/* Logout Button pinned to bottom of sidebar */}
+                <div className="p-4 border-t border-slate-100">
+                    <LogoutButton variant="sidebar" />
+                </div>
             </aside>
 
             {/* Main Content Payload */}
-            <main className="max-w-3xl mx-auto w-full relative">
+            <main className="max-w-3xl mx-auto w-full relative pb-20 lg:pb-0">
+                {/* Mobile Top Header containing Profile / Logout */}
+                <header className="lg:hidden flex items-center justify-between px-6 py-4 bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-40">
+                    <Link href="/app/profile" className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden text-center shrink-0">
+                            {user.profile_photo ? <img src={user.profile_photo.startsWith('/uploads') ? `/api/avatar/${user.profile_photo.split('/').pop()}` : user.profile_photo} alt="" className="w-full h-full object-cover" /> : <span className="text-[10px] items-center flex justify-center h-full">👤</span>}
+                        </div>
+                        <span className="font-bold text-sm text-slate-800">{user.first_name}</span>
+                    </Link>
+                    <div className="flex gap-4 items-center">
+                        <Link href="/listings" className="text-xs font-bold text-green-700 uppercase tracking-wider">Explore</Link>
+                        <LogoutButton variant="icon" />
+                    </div>
+                </header>
+
                 {children}
 
                 {/* Toast Notification Container natively injecting into layout */}
