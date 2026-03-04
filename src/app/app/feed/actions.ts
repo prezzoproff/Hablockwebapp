@@ -2,7 +2,8 @@
 
 import { prisma } from '@/lib/prisma';
 import { cookies } from 'next/headers';
-import { verifyAccessToken, encryptMessage, decryptMessage } from '@/lib/auth';
+import { verifyAccessToken } from '@/lib/auth';
+import { encryptMessage, decryptMessage } from '@/lib/encryption';
 
 export async function submitChatMessage(content: string) {
     const cookieStore = await cookies();

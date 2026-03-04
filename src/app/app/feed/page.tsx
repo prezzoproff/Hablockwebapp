@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { cookies } from 'next/headers';
-import { verifyAccessToken, decryptMessage } from '@/lib/auth';
+import { verifyAccessToken } from '@/lib/auth';
+import { decryptMessage } from '@/lib/encryption';
 import { redirect } from 'next/navigation';
 import FeedClient from './FeedClient';
 
